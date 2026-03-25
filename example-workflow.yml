@@ -42,7 +42,7 @@ jobs:
 
       - name: Scan smart contracts
         id: scan
-        uses: contractscan/contractscan-action@v1
+        uses: h33min/contractscan-action@v1
         with:
           api-key: ${{ secrets.CONTRACTSCAN_API_KEY }}
           path: '**/*.sol'          # scan all Solidity files
