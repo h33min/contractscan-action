@@ -1,0 +1,71 @@
+# .github/workflows/contractscan.yml
+#
+# ContractScan — Automatic smart contract vulnerability scanning
+#
+# Setup:
+#   1. Go to your ContractScan dashboard and generate an API key
+#      (requires Pro or Enterprise subscription)
+#   2. Add it as a GitHub repository secret: CONTRACTSCAN_API_KEY
+#   3. Copy this file to .github/workflows/contractscan.yml in your repo
+#
+# The scan runs on every push and pull request.
+# It fails CI if any Critical vulnerabilities are found.
+
+name: Smart Contract Security Scan
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - '**/*.sol'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - '**/*.sol'
+
+jobs:
+  contractscan:
+    name: ContractScan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write  # needed to post PR comments (optional)
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Scan smart contracts
+        id: scan
+        uses: contractscan/contractscan-action@v1
+        with:
+          api-key: ${{ secrets.CONTRACTSCAN_API_KEY }}
+          path: '**/*.sol'          # scan all Solidity files
+          fail-on: 'Critical'       # fail CI on Critical findings (High, Medium, Low also available)
+          report-format: 'markdown' # markdown | json
+
+      # Optional: post scan results as a PR comment
+      - name: Post PR comment
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const passed = '${{ steps.scan.outputs.passed }}' === 'true';
+            const findings = '${{ steps.scan.outputs.findings-count }}';
+            const critical = '${{ steps.scan.outputs.critical-count }}';
+            const icon = passed ? '✅' : '❌';
+            const body = `## ${icon} ContractScan Results\n\n` +
+              `**Status**: ${passed ? 'PASSED' : 'FAILED'} | ` +
+              `**Findings**: ${findings} | **Critical**: ${critical}\n\n` +
+              `See the [full report](${context.payload.pull_request.html_url}/checks) in the Actions summary.`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });

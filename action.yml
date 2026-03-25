@@ -1,0 +1,66 @@
+name: 'ContractScan — Smart Contract Security Scanner'
+description: 'Scan Solidity contracts for vulnerabilities on every push or pull request. Fails CI on critical findings.'
+author: 'ContractScan'
+
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  api-key:
+    description: 'ContractScan API key (create at your ContractScan dashboard). Store as a repository secret.'
+    required: true
+
+  api-url:
+    description: 'ContractScan API base URL (default: https://contract-scanner.raccoonworld.xyz)'
+    required: false
+    default: 'https://contract-scanner.raccoonworld.xyz'
+
+  path:
+    description: 'Glob pattern for Solidity files to scan (relative to repo root). Default: **/*.sol'
+    required: false
+    default: '**/*.sol'
+
+  fail-on:
+    description: 'Minimum severity that fails the CI step. One of: Critical, High, Medium, Low. Default: Critical'
+    required: false
+    default: 'Critical'
+
+  report-format:
+    description: 'Output format for step summary: markdown | json. Default: markdown'
+    required: false
+    default: 'markdown'
+
+  max-files:
+    description: 'Maximum number of Solidity files to scan per run. Default: 20'
+    required: false
+    default: '20'
+
+outputs:
+  findings-count:
+    description: 'Total number of findings across all scanned files'
+
+  critical-count:
+    description: 'Number of Critical severity findings'
+
+  passed:
+    description: 'true if all scans passed the fail-on threshold, false otherwise'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        python3 -m pip install httpx --quiet 2>/dev/null || true
+
+    - name: Run ContractScan
+      shell: bash
+      env:
+        CONTRACTSCAN_API_KEY: ${{ inputs.api-key }}
+        CONTRACTSCAN_API_URL: ${{ inputs.api-url }}
+        CONTRACTSCAN_PATH: ${{ inputs.path }}
+        CONTRACTSCAN_FAIL_ON: ${{ inputs.fail-on }}
+        CONTRACTSCAN_REPORT_FORMAT: ${{ inputs.report-format }}
+        CONTRACTSCAN_MAX_FILES: ${{ inputs.max-files }}
+      run: python3 "${{ github.action_path }}/scan.py"
