@@ -7,6 +7,11 @@ ContractScan uses [Slither](https://github.com/crytic/slither) static analysis w
 ## Usage
 
 ```yaml
+# Free tier (3 scans per IP, no API key needed):
+- name: Scan smart contracts
+  uses: h33min/contractscan-action@v1
+
+# With API key (unlimited scans):
 - name: Scan smart contracts
   uses: h33min/contractscan-action@v1
   with:
@@ -17,12 +22,19 @@ ContractScan uses [Slither](https://github.com/crytic/slither) static analysis w
 
 | Input | Required | Default | Description |
 |-------|----------|---------|-------------|
-| `api-key` | Yes | — | ContractScan API key. Store as a repository secret. |
+| `api-key` | No | — | ContractScan API key. Optional for free tier (3 scans/IP). Store as a repository secret for paid plans. |
 | `api-url` | No | `https://contract-scanner.raccoonworld.xyz` | ContractScan API base URL |
 | `path` | No | `**/*.sol` | Glob pattern for Solidity files to scan |
 | `fail-on` | No | `Critical` | Minimum severity that fails CI (`Critical`, `High`, `Medium`, `Low`) |
 | `report-format` | No | `markdown` | Output format: `markdown` or `json` |
-| `max-files` | No | `20` | Maximum number of files to scan per run |
+| `max-files` | No | `300` | Maximum number of files to scan per run |
+
+## Features
+
+- **ZIP bundling**: Automatically bundles your Solidity source files and dependency directories (`node_modules/`, `lib/`, `dependencies/`) into a single archive for correct import resolution
+- **Free tier**: 3 scans per IP with no API key required
+- **Multi-engine**: Slither static analysis + AI vulnerability detection
+- **Real hack references**: Cross-references findings with real DeFi exploit patterns
 
 ## Outputs
 
@@ -38,7 +50,7 @@ See [example-workflow.yml](./example-workflow.yml) for a complete example includ
 
 ## Get an API Key
 
-Visit [ContractScan](https://contract-scanner.raccoonworld.xyz) to create an account and generate an API key.
+Free tier works without an API key. For unlimited scans, visit [ContractScan](https://contract-scanner.raccoonworld.xyz) to generate an API key.
 
 ## License
 

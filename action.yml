@@ -1,5 +1,5 @@
 name: 'ContractScan — Smart Contract Security Scanner'
-description: 'Scan Solidity contracts for vulnerabilities on every push or pull request. Fails CI on critical findings.'
+description: 'Scan Solidity contracts for vulnerabilities. Auto-detects imports from node_modules/lib. Fails CI on critical findings.'
 author: 'ContractScan'
 
 branding:
@@ -8,8 +8,9 @@ branding:
 
 inputs:
   api-key:
-    description: 'ContractScan API key (create at your ContractScan dashboard). Store as a repository secret.'
-    required: true
+    description: 'ContractScan API key (optional for free tier — 3 scans per IP). Store as a repository secret for paid plans.'
+    required: false
+    default: ''
 
   api-url:
     description: 'ContractScan API base URL (default: https://contract-scanner.raccoonworld.xyz)'
@@ -32,9 +33,9 @@ inputs:
     default: 'markdown'
 
   max-files:
-    description: 'Maximum number of Solidity files to scan per run. Default: 20'
+    description: 'Maximum number of Solidity files to scan per run. Default: 300'
     required: false
-    default: '20'
+    default: '300'
 
 outputs:
   findings-count:
@@ -63,4 +64,4 @@ runs:
         CONTRACTSCAN_FAIL_ON: ${{ inputs.fail-on }}
         CONTRACTSCAN_REPORT_FORMAT: ${{ inputs.report-format }}
         CONTRACTSCAN_MAX_FILES: ${{ inputs.max-files }}
-      run: python3 "${{ github.action_path }}/scan.py"
+      run: python3 "${{ github.action_path }}/github-action/scan.py"

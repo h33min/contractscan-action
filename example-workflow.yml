@@ -3,10 +3,9 @@
 # ContractScan — Automatic smart contract vulnerability scanning
 #
 # Setup:
-#   1. Go to your ContractScan dashboard and generate an API key
-#      (requires Pro or Enterprise subscription)
-#   2. Add it as a GitHub repository secret: CONTRACTSCAN_API_KEY
-#   3. Copy this file to .github/workflows/contractscan.yml in your repo
+#   1. Copy this file to .github/workflows/contractscan.yml in your repo
+#   2. (Optional) Add a CONTRACTSCAN_API_KEY secret for unlimited scans
+#      Free tier works without an API key (3 scans per IP)
 #
 # The scan runs on every push and pull request.
 # It fails CI if any Critical vulnerabilities are found.
@@ -44,7 +43,7 @@ jobs:
         id: scan
         uses: h33min/contractscan-action@v1
         with:
-          api-key: ${{ secrets.CONTRACTSCAN_API_KEY }}
+          api-key: ${{ secrets.CONTRACTSCAN_API_KEY }}  # optional — free tier works without it
           path: '**/*.sol'          # scan all Solidity files
           fail-on: 'Critical'       # fail CI on Critical findings (High, Medium, Low also available)
           report-format: 'markdown' # markdown | json
