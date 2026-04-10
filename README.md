@@ -7,7 +7,7 @@ ContractScan uses [Slither](https://github.com/crytic/slither) static analysis w
 ## Usage
 
 ```yaml
-# Free tier (3 scans per IP, no API key needed):
+# Free tier (no API key needed):
 - name: Scan smart contracts
   uses: h33min/contractscan-action@v1
 
@@ -22,7 +22,7 @@ ContractScan uses [Slither](https://github.com/crytic/slither) static analysis w
 
 | Input | Required | Default | Description |
 |-------|----------|---------|-------------|
-| `api-key` | No | — | ContractScan API key. Optional for free tier (3 scans/IP). Store as a repository secret for paid plans. |
+| `api-key` | No | — | ContractScan API key. Optional for free tier. Store as a repository secret for paid plans. |
 | `api-url` | No | `https://contract-scanner.raccoonworld.xyz` | ContractScan API base URL |
 | `path` | No | `**/*.sol` | Glob pattern for Solidity files to scan |
 | `fail-on` | No | `Critical` | Minimum severity that fails CI (`Critical`, `High`, `Medium`, `Low`) |
@@ -32,7 +32,7 @@ ContractScan uses [Slither](https://github.com/crytic/slither) static analysis w
 ## Features
 
 - **ZIP bundling**: Automatically bundles your Solidity source files and dependency directories (`node_modules/`, `lib/`, `dependencies/`) into a single archive for correct import resolution
-- **Free tier**: 3 scans per IP with no API key required
+- **Free tier**: No API key required. Daily usage limits apply.
 - **Multi-engine**: Slither static analysis + AI vulnerability detection
 - **Real hack references**: Cross-references findings with real DeFi exploit patterns
 
